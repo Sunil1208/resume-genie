@@ -33,7 +33,7 @@
 }
 
 @layer utilities {
-  /* Animate text with a shine effect */
+  /* Animate text with a shine effect */  
   @keyframes text-shine {
     0% {
       background-position: 0% 50%;
