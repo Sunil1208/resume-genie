@@ -8,7 +8,7 @@ import HERO_IMG from "../assets/hero-img.jpg";
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const [openAuthModal, setOPenAuthModal] = useState(true);
+  const [openAuthModal, setOPenAuthModal] = useState(false);
   const [currentPage, setCurrentPage] = useState("login");
 
   const handleCTA = () => {};
