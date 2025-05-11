@@ -68,14 +68,69 @@ const registerUser = async (req, res) => {
     @route   POST /api/auth/login
     @access  Public
 */
-const loginUser = async (req, res) => {};
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required!" });
+    }
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
+    // Check if user exists
+    const user = await User.find({ email });
+
+    if (!user || user.length === 0) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user[0].password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    return res.status(200).json({
+      _id: user[0]._id,
+      name: user[0].name,
+      email: user[0].email,
+      profileImageUrl: user[0].profileImageUrl,
+      token: generateToken(user[0]._id),
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
 
 /*
     @desc    Get user profile
     @route   GET /api/auth/profile
     @access  Private (Requires JWT token)
 */
-const getUserProfile = async (req, res) => {};
+const getUserProfile = async (req, res) => {
+  try {
+    const { id: userId } = req.user;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profileImageUrl: user.profileImageUrl,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
 
 module.exports = {
   registerUser,
